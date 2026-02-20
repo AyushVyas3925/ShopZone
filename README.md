@@ -29,7 +29,7 @@ A sleek, responsive, and dynamic Single Page Application (SPA) built with React,
 
 ## 🚀 Demo
 Check out the live version here:  
-👉 **[Live Demo Link](https://your-live-demo-link.vercel.app/)** *(Replace with actual link)*
+👉 **[Live Demo Link](https://shop-zone-eta.vercel.app/)** 
 
 ---
 
