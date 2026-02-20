@@ -1,0 +1,83 @@
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: #121212;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-image: radial-gradient(circle at top right, #1f1f1f 0%, #121212 100%);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+/* Buttons */
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #646cff 0%, #747bff 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(100, 108, 255, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(100, 108, 255, 0.4);
+}
+
+.btn-danger {
+  background: rgba(255, 71, 87, 0.1);
+  color: #ff4757;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 71, 87, 0.2);
+}
+
+.btn-danger:hover {
+  background: #ff4757;
+  color: white;
+}
