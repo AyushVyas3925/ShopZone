@@ -1,10 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingCart, ShoppingBag } from 'lucide-react'
+import { ShoppingCart, ShoppingBag, LogIn, LogOut } from 'lucide-react'
 import { useCart } from '../context/CartContext'
+import { useAuth } from '../context/AuthContext'
 
 function Navbar() {
     const { cart } = useCart()
+    const { isAuthenticated, logout } = useAuth()
     const totalItems = cart.reduce((total, item) => total + item.quantity, 0)
 
     return (
@@ -32,6 +34,16 @@ function Navbar() {
                     <Link to="/" style={{ color: "#eee", fontWeight: "500" }}>Home</Link>
                     <Link to="/shop" style={{ color: "#eee", fontWeight: "500" }}>Shop</Link>
                     <Link to="/contact" style={{ color: "#eee", fontWeight: "500" }}>Contact</Link>
+
+                    {isAuthenticated ? (
+                        <button onClick={logout} style={{ color: "#eee", fontWeight: "500", background: "transparent", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "5px", padding: 0 }}>
+                            <LogOut size={18} /> Logout
+                        </button>
+                    ) : (
+                        <Link to="/login" style={{ color: "#eee", fontWeight: "500", display: "flex", alignItems: "center", gap: "5px" }}>
+                            <LogIn size={18} /> Login
+                        </Link>
+                    )}
 
                     {/* Cart Button */}
                     <Link to="/cart" style={{ position: "relative" }}>

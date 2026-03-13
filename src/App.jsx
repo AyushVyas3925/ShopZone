@@ -5,7 +5,9 @@ import Navbar from "./components/Navbar"
 import Shop from "./pages/Shop"
 import ProductDetails from "./pages/ProductDetails"
 import Cart from "./pages/Cart"
-import Contact from "./pages/Contact"
+import Login from "./pages/Login"
+import Checkout from "./pages/Checkout"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
   return (
@@ -17,12 +19,15 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/contact" element={<Contact />} />
-
+        <Route path="/login" element={<Login />} />
+        <Route path="/checkout" element={
+          <ProtectedRoute>
+            <Checkout />
+          </ProtectedRoute>
+        } />
       </Routes>
     </div>
   )
 }
 
 export default App
-
