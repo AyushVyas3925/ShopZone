@@ -15,7 +15,7 @@ function Home() {
             <h1 style={{
                 fontSize: "4rem",
                 marginBottom: "20px",
-                background: "linear-gradient(135deg, #ffffff 0%, #646cff 100%)",
+                background: "var(--heading-gradient)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 lineHeight: "1.1"
@@ -33,17 +33,19 @@ function Home() {
                         Shop Now
                     </button>
                 </Link>
-                <button style={{
-                    background: "transparent",
-                    border: "1px solid #444",
-                    color: "white",
-                    padding: "14px 40px",
-                    borderRadius: "8px",
-                    fontSize: "1.1rem",
-                    fontWeight: "600"
-                }}>
-                    Learn More
-                </button>
+                <Link to="/shop">
+                    <button style={{
+                        background: "transparent",
+                        border: "1px solid var(--border-card)",
+                        color: "var(--text-primary)",
+                        padding: "14px 40px",
+                        borderRadius: "8px",
+                        fontSize: "1.1rem",
+                        fontWeight: "600"
+                    }}>
+                        Learn More
+                    </button>
+                </Link>
             </div>
 
             {/* Background decoration elements */}
@@ -53,7 +55,7 @@ function Home() {
                 left: "10%",
                 width: "200px",
                 height: "200px",
-                background: "#646cff",
+                background: "var(--blob-color)",
                 filter: "blur(150px)",
                 opacity: "0.2",
                 zIndex: -1

@@ -1,30 +1,71 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Plus } from 'lucide-react'
+import React, { useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchProducts } from '../store/slices/productsSlice';
+import FilterSidebar from '../components/FilterSidebar';
+import ProductCard from '../components/ProductCard';
 
 function Shop() {
-    const [products, setProducts] = useState([])
-    const [loading, setLoading] = useState(true)
+    const dispatch = useDispatch();
+    const { items: products, status, error } = useSelector(state => state.products);
+    const filters = useSelector(state => state.filters);
 
     useEffect(() => {
-        fetch('https://dummyjson.com/products')
-            .then(res => res.json())
-            .then(data => {
-                setProducts(data.products)
-                setLoading(false)
-            })
-            .catch(err => {
-                console.error('Error fetching products:', err)
-                setLoading(false)
-            })
-    }, [])
+        if (status === 'idle') {
+            dispatch(fetchProducts());
+        }
+    }, [status, dispatch]);
 
-    if (loading) {
+    // Filtering and Sorting logic optimized with useMemo
+    const filteredProducts = useMemo(() => {
+        let result = products.filter(product => {
+            // Category
+            if (filters.selectedCategory !== 'all' && product.category !== filters.selectedCategory) return false;
+            
+            // Price
+            if (product.price < filters.priceRange.min || product.price > filters.priceRange.max) return false;
+            
+            // Rating
+            if (product.rating < filters.minRating) return false;
+            
+            // Search
+            if (filters.searchQuery && !product.title.toLowerCase().includes(filters.searchQuery.toLowerCase())) return false;
+            
+            return true;
+        });
+
+        // Sorting logic
+        if (filters.sortBy === 'price-asc') {
+            result.sort((a, b) => a.price - b.price);
+        } else if (filters.sortBy === 'price-desc') {
+            result.sort((a, b) => b.price - a.price);
+        } else if (filters.sortBy === 'rating') {
+            result.sort((a, b) => b.rating - a.rating);
+        }
+
+        return result;
+    }, [products, filters.selectedCategory, filters.priceRange, filters.minRating, filters.searchQuery, filters.sortBy]);
+
+    if (status === 'loading' || status === 'idle') {
         return (
             <div className="fade-in" style={{ padding: '40px', textAlign: "center" }}>
                 <h2 style={{ fontSize: "2rem", color: "#666" }}>Loading Collection...</h2>
             </div>
-        )
+        );
+    }
+
+    if (status === 'failed') {
+        return (
+            <div className="fade-in" style={{ padding: '40px', textAlign: "center", color: "#ff4757" }}>
+                <h2 style={{ fontSize: "2rem" }}>Error Loading Products</h2>
+                <p>{error}</p>
+                <button 
+                    onClick={() => dispatch(fetchProducts())}
+                    style={{ marginTop: '20px', padding: '10px 20px', background: '#ff4757', color: 'white', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+                >
+                    Try Again
+                </button>
+            </div>
+        );
     }
 
     return (
@@ -33,104 +74,47 @@ function Shop() {
                 <h1 style={{
                     fontSize: "3rem",
                     marginBottom: "10px",
-                    background: "linear-gradient(to right, #fff, #aaa)",
+                    background: "var(--subheading-gradient)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent"
                 }}>
                     Curated Collection
                 </h1>
-                <p style={{ color: "#888", fontSize: "1.1rem" }}>Handpicked quality for the modern lifestyle.</p>
+                <p style={{ color: "var(--text-muted)", fontSize: "1.1rem" }}>Handpicked quality for the modern lifestyle.</p>
             </div>
 
-            <div className="product-grid" style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '30px'
-            }}>
-                {products.map(product => (
-                    <div key={product.id} style={{
-                        background: "#1e1e1e",
-                        borderRadius: "16px",
-                        overflow: "hidden",
-                        border: "1px solid #333",
-                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                        position: "relative",
-                        display: "flex",
-                        flexDirection: "column"
-                    }}
-                        onMouseEnter={e => {
-                            e.currentTarget.style.transform = "translateY(-10px)"
-                            e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.4)"
-                        }}
-                        onMouseLeave={e => {
-                            e.currentTarget.style.transform = "translateY(0)"
-                            e.currentTarget.style.boxShadow = "none"
-                        }}
-                    >
-                        <Link to={`/product/${product.id}`} style={{ textDecoration: "none", color: "inherit", flex: 1 }}>
-                            <div style={{ position: "relative", height: "250px", overflow: "hidden" }}>
-                                <img
-                                    src={product.thumbnail}
-                                    alt={product.title}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                />
-                                <div style={{
-                                    position: "absolute",
-                                    top: "10px",
-                                    right: "10px",
-                                    background: "rgba(0,0,0,0.6)",
-                                    color: "white",
-                                    padding: "4px 10px",
-                                    borderRadius: "20px",
-                                    fontSize: "0.8rem",
-                                    backdropFilter: "blur(4px)"
-                                }}>
-                                    {product.category}
-                                </div>
-                            </div>
+            <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                {/* Sidebar */}
+                <div style={{ flexShrink: 0 }}>
+                    <FilterSidebar />
+                </div>
 
-                            <div style={{ padding: "20px" }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
-                                    <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "600", color: "#eee" }}>
-                                        {product.title}
-                                    </h3>
-                                    <span style={{ fontWeight: "bold", color: "#646cff", fontSize: "1.1rem" }}>
-                                        ${product.price}
-                                    </span>
-                                </div>
-                                <p style={{ color: "#aaa", fontSize: "0.9rem", lineHeight: "1.5", margin: 0 }}>
-                                    {product.description.substring(0, 60)}...
-                                </p>
-                            </div>
-                        </Link>
-
-                        <div style={{ padding: "0 20px 20px 20px" }}>
-                            <Link to={`/product/${product.id}`} style={{ display: "block" }}>
-                                <button style={{
-                                    width: "100%",
-                                    padding: "12px",
-                                    background: "#333",
-                                    color: "white",
-                                    borderRadius: "8px",
-                                    fontWeight: "500",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    gap: "8px",
-                                    transition: "background 0.2s"
-                                }}
-                                    onMouseEnter={e => e.currentTarget.style.background = "#444"}
-                                    onMouseLeave={e => e.currentTarget.style.background = "#333"}
-                                >
-                                    View Details
-                                </button>
-                            </Link>
-                        </div>
+                {/* Main Content */}
+                <div style={{ flex: 1, minWidth: '300px' }}>
+                    <div style={{ marginBottom: '20px', color: '#aaa' }}>
+                        Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
                     </div>
-                ))}
+
+                    {filteredProducts.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '50px', background: 'rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+                            <h2 style={{ color: '#eee', marginBottom: '10px' }}>No products found</h2>
+                            <p style={{ color: '#aaa' }}>Try adjusting your filters to find what you're looking for.</p>
+                        </div>
+                    ) : (
+                        <div className="product-grid" style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                            gap: '30px'
+                        }}>
+                            {filteredProducts.map(product => (
+                                <ProductCard key={product.id} product={product} />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default Shop
+export default Shop;

@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { clearCart } from '../store/slices/cartSlice';
 
 function Checkout() {
+    const [orderId] = useState(() => Math.floor(100000 + Math.random() * 900000));
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(clearCart());
+    }, [dispatch]);
+
     return (
         <div className="fade-in" style={{ textAlign: 'center', marginTop: '60px' }}>
             <h1 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>Checkout Passed</h1>
@@ -30,8 +39,8 @@ function Checkout() {
                     margin: '0 auto 20px'
                 }}>✓</div>
                 <h3 style={{ color: '#4CAF50', fontSize: '1.5rem', margin: '0 0 10px 0' }}>Order Confirmed</h3>
-                <p style={{ margin: 0, color: 'rgba(255, 255, 255, 0.8)' }}>
-                    Order ID: <strong style={{ letterSpacing: '2px' }}>#{Math.floor(100000 + Math.random() * 900000)}</strong>
+                <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.8)' }}>
+                    Order ID: <strong style={{ letterSpacing: '2px' }}>#{orderId}</strong>
                 </p>
             </div>
         </div>
